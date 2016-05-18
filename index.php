@@ -12,12 +12,40 @@ $experiment = new Experiment(1);
 </head>
 <body>
 	<?php $experiment->runExperiment(); ?>
-	<div id="chart1"><svg style="height: 500px;"> </svg></div>
-	<div id="company2"><svg style="height: 500px;"> </svg></div>
+	<div id="legend">Iteration <span>0</span></div>
+	<div id="company1"><svg style="height: 500px;"> </svg></div>
 	<script type="text/javascript" src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/nv.d3.min.js" charset="utf-8"></script>
 	<script type="text/javascript">
-		function staticData() { return <?php echo $experiment->json(0); ?>};
+		var iteration = 0;
+		var company1Chart = null;
+		var $company1Canvas = null;
+		var companyDataVar = [
+			<?php echo implode(', ', $experiment->json(0)); ?>
+		];
+		function companyData() {
+			var iterationData = companyDataVar[iteration];
+
+			if (!reachedMaxIteration()) {
+				iteration++;
+			}
+
+			return iterationData;
+		};
+		function updateCompany1Chart() {
+			$company1Canvas.datum(companyData());
+			company1Chart.update();
+
+			if (!reachedMaxIteration()) {
+				setTimeout(function () {
+					updateCompany1Chart();
+				}, 250);
+			}
+		}
+
+		function reachedMaxIteration() {
+			return iteration > (companyDataVar.length - 1);
+		}
 		nv.addGraph(function() {
 			var chart = nv.models.multiBarHorizontalChart()
 				.x(function(d) { return d.label })
@@ -30,12 +58,14 @@ $experiment = new Experiment(1);
 			chart.yAxis
 				.tickFormat(d3.format(',.2f'));
 
-			d3.select('#chart1 svg')
-				.datum(staticData())
+			$company1Canvas = d3.select('#company1 svg')
+				.datum(companyData())
 				.call(chart);
 
 			nv.utils.windowResize(chart.update);
 
+			company1Chart = chart;
+			updateCompany1Chart();
 			return chart;
 		});
 	</script>

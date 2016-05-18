@@ -11,21 +11,22 @@ class Experiment {
 		srand();
 		$this->json = [];
 		for ($i = 0; $i < $companyCount; $i++) {
-			$this->companies[] = new Company();
+			$company = new Company();
+			$this->companies[] = $company;
+			$this->json[$i][0] = $company->toJSON();
 		}
 	}
 
 	public function runExperiment($maxIterations = 100) {
-		foreach ($this->companies as $index => $company) {
-			echo '<h1>Company #'. ($index + 1) .'</h1>';
+		foreach ($this->companies as $companyIndex => $company) {
+			echo '<h1>Company #'. ($companyIndex + 1) .'</h1>';
 			$iterationNumber = 1;
 			while ($iterationNumber <= $maxIterations && $company->hasOriginalEmployees()) {
-				echo '<h2>Running Cycle '. $iterationNumber .'</h2>';
+				// echo '<h2>Running Cycle '. $iterationNumber .'</h2>';
 				$this->runCycle($company);
+				$this->json[$companyIndex][$iterationNumber] = $company->toJSON();
 				$iterationNumber++;
 			}
-
-			$this->json[$index] = $company->toJSON();
 		}
 	}
 
@@ -33,7 +34,7 @@ class Experiment {
 		$company->processAttrition(0.15);
 		$company->promoteToFill();
 
-echo nl2br($company->toString());
+// echo nl2br($company->toString());
 // $company->printLevel(8);
 	}
 
