@@ -10,8 +10,8 @@ class Company {
 		$levelPositions = [500, 350, 200, 150, 100, 75, 40, 10];
 		$this->levels = [];
 
-		foreach ($levelPositions as $employeeCount) {
-			$this->levels[] = new CorporateLevel($employeeCount);
+		foreach ($levelPositions as $levelIndex => $employeeCount) {
+			$this->levels[] = new CorporateLevel(($levelIndex + 1), $employeeCount);
 		}
 	}
 
@@ -44,16 +44,8 @@ class Company {
 	public function toString() {
 		$outString = '';
 
-		foreach ($this->levels as $levelIndex => $currentLevel) {
-			$genderStrings = [];
-			$genderCount = $currentLevel->getGenderCount();
-			$levelHeadcount = $currentLevel->getEmployeeCount();
-
-			foreach ($genderCount as $genderValue => $genderHeadcount) {
-				$genderStrings[] = sprintf('%s %d, [%f percent]', $genderValue, $genderHeadcount, ($genderHeadcount / $levelHeadcount) * 100);
-			}
-
-			$outString .= sprintf("Company level %d: %s\n", ($levelIndex + 1), implode(', ', $genderStrings));
+		foreach ($this->levels as $currentLevel) {
+			$outString .= $currentLevel->toString();
 		}
 
 		return $outString;
@@ -72,14 +64,14 @@ class Company {
 
 		for ($i = (count($this->levels) - 1); $i >= 0; $i--) {
 			$currentLevel = $this->levels[$i];
+			$label = 'Level '. $currentLevel->getLevelNumber();
 
-			$genderCount = $currentLevel->getGenderCount();
-			$levelHeadcount = $currentLevel->getEmployeeCount();
+			$levelSummary = $currentLevel->summary();
 
-			foreach ($genderCount as $genderString => $genderHeadcount) {
-				$data[$genderString]['values'][] = [
-					'label' => 'Level '. ($i + 1),
-					'value' => (($genderHeadcount / $levelHeadcount) * 100)
+			foreach ($levelSummary as $genderLabel => $values) {
+				$data[$genderLabel]['values'][] = [
+					'label' => $label,
+					'value' => $values['percentage']
 				];
 			}
 		}

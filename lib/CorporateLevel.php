@@ -5,12 +5,14 @@ require_once('Gender.php');
 
 class CorporateLevel {
 
+	private $levelNumber;
 	private $employeeCount = 0;
 	private $employees = [];
 	private $genderCount = [];
 	private $hasOriginalEmployees = false;
 
-	public function __construct($employeeCount) {
+	public function __construct($levelNumber, $employeeCount) {
+		$this->levelNumber = $levelNumber;
 		$this->employeeCount = $employeeCount;
 		$this->employees = [];
 		$this->genderCount = array_flip(Gender::options());
@@ -38,6 +40,10 @@ class CorporateLevel {
 		if ($employee->isOriginalEmployee()) {
 			$this->verifyOriginalEmployees();
 		}
+	}
+
+	public function getLevelNumber() {
+		return $this->levelNumber;
 	}
 
 	public function getEmployees() {
@@ -119,5 +125,29 @@ class CorporateLevel {
 
 	private function numberOfEmployeesMissing() {
 		return ($this->employeeCount - count($this->employees));
+	}
+
+	public function toString() {
+		$genderStrings = [];
+
+		$levelSummary = $this->summary();
+		foreach ($levelSummary as $genderLabel => $values) {
+			$genderStrings[] = sprintf('%s %d, [%f percent]', $genderLabel, $values['count'], $values['percentage']);
+		}
+
+		return sprintf("Company level %d: %s\n", $this->levelNumber, implode(', ', $genderStrings));
+	}
+
+	public function summary() {
+		$summary = [];
+
+		foreach ($this->genderCount as $genderValue => $genderHeadcount) {
+			$summary[$genderValue] = [
+				'count' => $genderHeadcount,
+				'percentage' => (($genderHeadcount / $this->employeeCount) * 100)
+			];
+		}
+
+		return $summary;
 	}
 }
