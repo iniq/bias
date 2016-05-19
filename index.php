@@ -26,6 +26,7 @@ $experiment = new Experiment($datasetCount);
 	endfor;
 	?>
 	<script type="text/javascript" src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/jquery-1.12.3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/nv.d3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/bias.js" charset="utf-8"></script>
 	<script type="text/javascript">

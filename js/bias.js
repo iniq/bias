@@ -6,6 +6,7 @@ function companyDataset(companyIndex, dataset) {
 	this.chart = null;
 	this.$canvas = null;
 	this.data = dataset;
+	this.$iterationLabel = $('#company'+ this.companyIndex +' span');
 
 	this.initialize = function(chart, $canvas) {
 		this.chart = chart;
@@ -27,6 +28,7 @@ function companyDataset(companyIndex, dataset) {
 	this.update = function() {
 		this.$canvas.datum(this.companyData());
 		this.chart.update();
+		this.$iterationLabel.text(this.iteration);
 
 		if (!this.reachedMaxIteration()) {
 			var self = this;
@@ -38,7 +40,7 @@ function companyDataset(companyIndex, dataset) {
 	};
 
 	this.reachedMaxIteration = function() {
-		return this.iteration > (this.data.length - 1);
+		return this.iteration >= (this.data.length - 1);
 	};
 
 	this.setup = function() {
