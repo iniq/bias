@@ -9,10 +9,13 @@ function companyDataset(companyIndex, dataset) {
 	this.$iterationLabel = $('#company'+ this.companyIndex +' span');
 
 	this.initialize = function(chart, $canvas) {
+		var self = this;
 		this.chart = chart;
 		this.$canvas = $canvas;
 
-		this.update();
+		setTimeout(function () {
+			self.update();
+		}, 1250);
 	};
 
 	this.companyData = function() {

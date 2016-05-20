@@ -20,6 +20,7 @@ class Experiment {
 	public function runExperiment($maxIterations = 100) {
 		foreach ($this->companies as $companyIndex => $company) {
 			$iterationNumber = 1;
+			$this->json[$companyIndex][0] = $company->toJSON();
 
 			while ($iterationNumber <= $maxIterations && $company->hasOriginalEmployees()) {
 				$this->runCycle($company);
