@@ -2,7 +2,7 @@
 
 require_once('lib/Experiment.php');
 
-$datasetCount = 5;
+$datasetCount = 20;
 
 $experiment = new Experiment($datasetCount);
 ?></!DOCTYPE html>
@@ -23,6 +23,10 @@ $experiment = new Experiment($datasetCount);
 		<div class="page-header">
 			<h1>Subconscious Bias Experiment Recreation</h1>
 			<p>An attempt to recreate <a href="http://www.ruf.rice.edu/~lane/papers/male_female.pdf">this study</a>.</p>
+		</div>
+		<div id="companyAverage">
+			<div>Iteration <span>0</span></div>
+			<svg style="height: 500px;"></svg>
 		</div>
 		<div class="row">
 			<?php
@@ -49,11 +53,14 @@ $experiment = new Experiment($datasetCount);
 	<script type="text/javascript" src="js/nv.d3.min.js" charset="utf-8"></script>
 	<script type="text/javascript" src="js/bias.js" charset="utf-8"></script>
 	<script type="text/javascript">
+		totalDatasets = <?php echo $datasetCount; ?>;
 		<?php
 		for ($i = 0; $i < $datasetCount; $i++) {
-			echo 'datasets.push(new companyDataset('. $i .', ['. implode(', ', $experiment->json($i)) .']));';
+			echo 'datasets.push(new CompanyDataset('. $i .', ['. implode(', ', $experiment->json($i)) .']));';
 		}
 		?>
+		average = new AveragedDataset('Average', datasets);
+		initializeVisualization();
 	</script>
 </body>
 </html>

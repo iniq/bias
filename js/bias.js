@@ -1,14 +1,27 @@
+"use strict";
+
 var datasets = [];
+var totalDatasets = 0;
+var average = null;
 
-function companyDataset(companyIndex, dataset) {
-	this.companyIndex = companyIndex;
-	this.iteration = 0;
-	this.chart = null;
-	this.$canvas = null;
-	this.data = dataset;
-	this.$iterationLabel = $('#company'+ this.companyIndex +' span');
+function initializeVisualization() {
+	for (var i = 0; i < datasets.length; i++) {
+		datasets[i].register();
+	}
+	average.register();
+}
 
-	this.initialize = function(chart, $canvas) {
+class CompanyDataset {
+	constructor(companyIndex, dataset) {
+		this.companyIndex = companyIndex;
+		this.iteration = 0;
+		this.chart = null;
+		this.$canvas = null;
+		this.data = dataset;
+		this.$iterationLabel = $('#company'+ this.companyIndex +' span');
+	}
+
+	initialize(chart, $canvas) {
 		var self = this;
 		this.chart = chart;
 		this.$canvas = $canvas;
@@ -18,7 +31,7 @@ function companyDataset(companyIndex, dataset) {
 		}, 1250);
 	};
 
-	this.companyData = function() {
+	companyData() {
 		var iterationData = this.data[this.iteration];
 
 		if (!this.reachedMaxIteration()) {
@@ -28,7 +41,7 @@ function companyDataset(companyIndex, dataset) {
 		return iterationData;
 	};
 
-	this.update = function() {
+	update() {
 		this.$canvas.datum(this.companyData());
 		this.chart.update();
 		this.$iterationLabel.text(this.iteration);
@@ -42,11 +55,11 @@ function companyDataset(companyIndex, dataset) {
 		}
 	};
 
-	this.reachedMaxIteration = function() {
-		return this.iteration >= (this.data.length - 1);
+	reachedMaxIteration() {
+		return this.iteration >= this.data.length;
 	};
 
-	this.setup = function() {
+	register() {
 		var self = this;
 
 		nv.addGraph(function() {
@@ -61,7 +74,7 @@ function companyDataset(companyIndex, dataset) {
 			chart.yAxis
 				.tickFormat(d3.format(',.2f'));
 
-			$canvas = d3.select('#company'+ self.companyIndex +' svg')
+			var $canvas = d3.select('#company'+ self.companyIndex +' svg')
 				.datum(self.companyData())
 				.call(chart);
 
@@ -71,6 +84,64 @@ function companyDataset(companyIndex, dataset) {
 			return chart;
 		});
 	};
+}
 
-	this.setup();
+class AveragedDataset extends CompanyDataset {
+	constructor(selectorKey, companyDatasets) {
+		super(selectorKey, null);
+		this.data = this.averageDatasets(companyDatasets);
+	}
+
+	averageDatasets(companyDatasets) {
+		var averagedData = [];
+		var iterationData = [];
+		var maximumIterationCount = 0;
+
+		for (var i = 0; i < companyDatasets.length; i++) {
+			maximumIterationCount = Math.max(companyDatasets[i].data.length, maximumIterationCount);
+		}
+
+		for (var iterationNumber = 0; iterationNumber < maximumIterationCount; iterationNumber++) {
+			var iterationData = [];
+			for (var datasetIndex = 0; datasetIndex < companyDatasets.length; datasetIndex++) {
+				var datasetIteration = companyDatasets[datasetIndex].data[Math.min((companyDatasets[datasetIndex].data.length - 1), iterationNumber)];
+
+				for (var genderIndex = 0; genderIndex < datasetIteration.length; genderIndex++) {
+					var gender = datasetIteration[genderIndex];
+
+					if (typeof iterationData[genderIndex] === 'undefined') {
+						iterationData[genderIndex] = {
+							'color': gender.color,
+							'key': gender.key,
+							'values': []
+						};
+					}
+
+					for (var companyLevelIndex = 0; companyLevelIndex < gender.values.length; companyLevelIndex++) {
+						var level = gender.values[companyLevelIndex];
+
+						if (typeof iterationData[genderIndex].values[companyLevelIndex] === 'undefined') {
+							iterationData[genderIndex].values[companyLevelIndex] = {
+								'label': level.label,
+								'value': 0,
+								'componentValues': []
+							};
+						}
+						iterationData[genderIndex].values[companyLevelIndex].componentValues.push(level.value);
+
+						var pushedValues = iterationData[genderIndex].values[companyLevelIndex].componentValues.length;
+						var sum = 0;
+						for (var i = 0; i < pushedValues; i++) {
+							sum += iterationData[genderIndex].values[companyLevelIndex].componentValues[i];
+						}
+						iterationData[genderIndex].values[companyLevelIndex].value = (sum / pushedValues);
+					}
+				}
+			}
+
+			averagedData.push(iterationData);
+		}
+
+		return averagedData;
+	}
 }
