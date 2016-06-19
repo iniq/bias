@@ -7,7 +7,7 @@ class Gender {
 	const MALE = 'male';
 
 	private static $ADJUSTMENTS = array(
-		self::MALE => 1,
+		self::MALE => 2.01,
 		self::FEMALE => 0
 	);
 
@@ -46,5 +46,9 @@ class Gender {
 
 	public function getScoreAdjustment() {
 		return self::$ADJUSTMENTS[$this->value];
+	}
+
+	public function adjustScore($score) {
+		return $score += $this->getScoreAdjustment();
 	}
 }

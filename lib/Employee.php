@@ -24,11 +24,7 @@ class Employee {
 	}
 
 	private function generatePerformanceScore() {
-		$upperBound = 100;
-
-		$upperBound += $this->gender->getScoreAdjustment();
-
-		$this->performanceScore = rand(1, $upperBound);
+		$this->performanceScore = $this->gender->adjustScore(rand(0, 100));
 	}
 
 	public function getPerformanceScore() {
