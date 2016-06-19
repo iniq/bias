@@ -5,11 +5,33 @@ var totalDatasets = 0;
 var average = null;
 
 function initializeVisualization() {
+	$('#loadingPlacard').hide();
+	$('#graphContainer').show();
+
+	average.register();
 	for (var i = 0; i < datasets.length; i++) {
 		datasets[i].register();
 	}
-	average.register();
 }
+
+function fetchDataset(datasetIndex) {
+	$.getJSON('single.php', function (data) {
+		datasets.push(new CompanyDataset(datasetIndex, data));
+		$('#loadedDatasetCount').text(datasets.length);
+		$('#loadingPlacard progress').val(datasets.length);
+
+		if (datasets.length == totalDatasets) {
+			average = new AveragedDataset('Average', datasets);
+			window.setTimeout(initializeVisualization, 500);
+		}
+	});
+}
+
+$(document).ready(function () {
+	for (var i = 0; i < totalDatasets; i++) {
+		fetchDataset(i);
+	}
+});
 
 class CompanyDataset {
 	constructor(companyIndex, dataset) {

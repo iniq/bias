@@ -7,13 +7,13 @@ class Gender {
 	const MALE = 'male';
 
 	private static $ADJUSTMENTS = array(
-		self::MALE => 2.01,
-		self::FEMALE => 0
+		self::FEMALE => 0,
+		self::MALE => 2.01
 	);
 
 	public static $COLORS = array(
-		self::MALE => '#0000ff',
-		self::FEMALE => '#ff69b4'
+		self::FEMALE => '#f7b5ef',
+		self::MALE => '#0000ff'
 	);
 
 	public function __construct($value = null) {

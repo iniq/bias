@@ -5,26 +5,26 @@ require_once('Company.php');
 class Experiment {
 
 	private $companies;
-	private $json;
+	private $jsonData;
 
 	public function __construct($companyCount = 1) {
 		srand();
-		$this->json = [];
+		$this->jsonData = [];
 		for ($i = 0; $i < $companyCount; $i++) {
 			$company = new Company();
 			$this->companies[] = $company;
-			$this->json[$i][0] = $company->toJSON();
+			$this->jsonData[$i][0] = $company->generateJsonData();
 		}
 	}
 
 	public function runExperiment($maxIterations = 100) {
 		foreach ($this->companies as $companyIndex => $company) {
 			$iterationNumber = 1;
-			$this->json[$companyIndex][0] = $company->toJSON();
+			$this->jsonData[$companyIndex][0] = $company->generateJsonData();
 
 			while ($iterationNumber <= $maxIterations && $company->hasOriginalEmployees()) {
 				$this->runCycle($company);
-				$this->json[$companyIndex][$iterationNumber] = $company->toJSON();
+				$this->jsonData[$companyIndex][$iterationNumber] = $company->generateJsonData();
 				$iterationNumber++;
 			}
 		}
@@ -35,7 +35,7 @@ class Experiment {
 		$company->promoteToFill();
 	}
 
-	public function json($companyIndex) {
-		return $this->json[$companyIndex];
+	public function json($companyIndex = 0) {
+		return json_encode($this->jsonData[$companyIndex]);
 	}
 }

@@ -51,7 +51,7 @@ class Company {
 		return $outString;
 	}
 
-	public function toJSON() {
+	public function generateJsonData() {
 		$genders = Gender::options();
 
 		foreach ($genders as $genderString) {
@@ -82,7 +82,7 @@ class Company {
 			$returnData[] = $data[$genderString];
 		}
 
-		return json_encode($returnData);
+		return $returnData;
 	}
 
 	public function printLevel($levelNumber) {
