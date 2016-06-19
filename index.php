@@ -1,6 +1,18 @@
 <?php
 
 $datasetCount = 20;
+$showCompanies = true;
+
+if (!empty($_GET['c'])) {
+	$querystringCount = intval($_GET['c']);
+	if ($querystringCount > 0) {
+		$datasetCount = $querystringCount;
+	}
+}
+
+if (isset($_GET['s']) && $_GET['s'] === '0') {
+	$showCompanies = false;
+}
 
 ?></!DOCTYPE html>
 <html lang="en">
@@ -34,6 +46,7 @@ $datasetCount = 20;
 				<div>Iteration <span>0</span></div>
 				<svg style="height: 500px;"></svg>
 			</div>
+			<?php if ($showCompanies) : ?>
 			<div id="individualCompaniesContainer">
 				<div class="row">
 					<?php
@@ -54,6 +67,7 @@ $datasetCount = 20;
 					?>
 				</div>
 			</div>
+			<?php endif; ?>
 		</div>
 	</div>
 	<script type="text/javascript" src="js/jquery-1.12.3.min.js" charset="utf-8"></script>
@@ -63,6 +77,11 @@ $datasetCount = 20;
 	<script type="text/javascript" src="js/bias.js" charset="utf-8"></script>
 	<script type="text/javascript">
 		totalDatasets = <?php echo $datasetCount; ?>;
+		<?php
+		if (!$showCompanies) {
+			echo 'registerCompanies = false;';
+		}
+		?>
 	</script>
 </body>
 </html>

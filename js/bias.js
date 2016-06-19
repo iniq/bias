@@ -3,14 +3,17 @@
 var datasets = [];
 var totalDatasets = 0;
 var average = null;
+var registerCompanies = true;
 
 function initializeVisualization() {
 	$('#loadingPlacard').hide();
 	$('#graphContainer').show();
 
 	average.register();
-	for (var i = 0; i < datasets.length; i++) {
-		datasets[i].register();
+	if (registerCompanies) {
+		for (var i = 0; i < datasets.length; i++) {
+			datasets[i].register();
+		}
 	}
 }
 
