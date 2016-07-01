@@ -1,6 +1,6 @@
 <?php
 
-require_once('Gender.php');
+require_once('GenderFactory.php');
 
 class Employee {
 
@@ -10,7 +10,7 @@ class Employee {
 
 	public function __construct($gender = null, $initialEmployee = false) {
 		if (is_null($gender)) {
-			$gender = new Gender();
+			$gender = GenderFactory::random();
 		}
 
 		$this->gender = $gender;
@@ -19,7 +19,7 @@ class Employee {
 	}
 
 	public static function createProportionalEmployee($employeeNumber, $totalEmployees, $initialEmployee = false) {
-		$gender = new Gender(Gender::selectProporitionalOption($employeeNumber, $totalEmployees));
+		$gender = GenderFactory::proportional($employeeNumber, $totalEmployees);
 		return new Employee($gender, $initialEmployee);
 	}
 
